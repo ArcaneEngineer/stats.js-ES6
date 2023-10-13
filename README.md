@@ -1,3 +1,5 @@
+**What's changed:** This module has been converted to ES6. I got tired of trying to import into a worker thread that handles my rendering -- [worker threads have strange requirements for imports](https://stackoverflow.com/questions/44901550/whats-the-difference-between-importscripts-and-es6-modules-import) and non-ES6 imports make that even more difficult.
+
 stats.js
 ========
 
