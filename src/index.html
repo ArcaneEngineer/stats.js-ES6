@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Stats.js ES6 module demo</title>
+</head>
+<body>
+<script type="module">
+import Stats from './Stats.js';
+
+var stats = new Stats();
+stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild( stats.dom );
+
+let i = 0;
+
+function animate()
+{
+	stats.begin();
+
+	// monitored code goes here...
+	i++;
+	if (i % 200 == 0)
+	{
+		for (let j = 0; j < 1000; j++) console.log('.');
+	}
+	// ...monitored code.
+
+	stats.end();
+	
+	requestAnimationFrame( animate );
+}
+
+requestAnimationFrame( animate );
+</script>
+</body>
+</html>
