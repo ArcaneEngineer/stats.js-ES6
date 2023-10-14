@@ -1,8 +1,9 @@
 **What's changed so far:** 
 
 * Converted to ES6 module.
-* Generalised code to allow for custom panels to be added by the user, for example, `entities / maxEntities` count in your simulation.
-
+* Generalised code for loop based processing of all panels, thereby *sealing off* the majority of code from future changes.
+* Allowed for custom panels to be added by the user via external config *without* changing the Stats.js source code further.
+  
 **What's planned:**
 
 * Get this module working in a separate rendering thread, since secondary threads connot write canvases without `OffscreenCanvas` / `transferControlToOffscreen`.
