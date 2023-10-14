@@ -177,12 +177,6 @@ export default class Stats
 		this.panelShowId = id;
 	}
 	
-	setMode(id) // Backwards Compatibility
-	{
-		this.showPanel(id);
-	}
-	
-	//nested class
 	static Panel = class Panel
 	{
 		dom = undefined
