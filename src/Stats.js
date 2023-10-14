@@ -25,7 +25,7 @@ export default class Stats
 			fg: '#0ff',
 			bg: '#002',
 			updateCondition: function(timing, customObj) {return timing.timeNow >= timing.timePrevFrameEnd + TIME_DIFF;}, 
-			calcValue: function (timing){console.log('n', timing.timeSincePrevFrameEnded); return timing.frames * 1000 / timing.timeSincePrevFrameEnded;},
+			calcValue: function (timing){return timing.frames * 1000 / timing.timeSincePrevFrameEnded;},
 			calcMaxValue: function (timing){return 100;}
 		},
 		{
@@ -253,7 +253,6 @@ export default class Stats
 			let name = p.name;
 			let value    = p.calcValue   (timing);
 			let maxValue = p.calcMaxValue(timing);
-			if (name=="FPS") console.log(value, maxValue);
 			let min = this.min = Math.min( this.min, value );
 			let max = this.max = Math.max( this.max, value );
 			let fg = p.fg; 
