@@ -38,8 +38,28 @@ npm install stats.js
 
 ```javascript
 //See config formats in the javascript source. These can be copied, modified, and placed here for custom user experience.
-let globalConfig = {...};
-let panelsConfig = {...};
+
+let globalConfig = {...}; //contains sizes, colors, text attributes, general to all panels.
+
+static panelsConfig =
+[
+	{
+		name: 'FPS',
+		fg: '#0ff',
+		bg: '#002',
+		updateCondition: function(timing, customObj) {return timing.timeNow >= timing.timePrevFrameEnd + TIME_DIFF;}, 
+		calcValue: function (timing){console.log('n', timing.timeSincePrevFrameEnded); return timing.frames * 1000 / timing.timeSincePrevFrameEnded;},
+		calcMaxValue: function (timing){return 100;}
+	},
+	{ //custom panel example
+		name: 'Entities',
+		fg: '#222',
+		bg: '#444', 
+		updateCondition: function(timing, customObj) {return true;}, //always update
+		calcValue: function (timing){return Entities.count;}, //numerator
+		calcMaxValue: function (timing){return Entities.MAX;} //denominator
+	},
+}
 var stats = new Stats(globalConfig, panelsConfig); //parameters are optional - defaults will otherwise be used
 stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild( stats.dom );
