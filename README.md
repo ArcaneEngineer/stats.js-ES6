@@ -6,7 +6,7 @@
   
 **What's planned:**
 
-* Get this module working in a separate rendering thread, since secondary threads connot write canvases without `OffscreenCanvas` / `transferControlToOffscreen`.
+* Get module working in a separate rendering thread: secondary threads cannot write canvases without `OffscreenCanvas` / `transferControlToOffscreen`.
 
 stats.js
 ========
