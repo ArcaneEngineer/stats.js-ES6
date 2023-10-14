@@ -17,10 +17,12 @@ export default class Stats
 	dom = undefined
 	domElement = undefined
 	
-	constructor()
+	constructor(config)
 	{
+		let g = this.configureGlobals(config);
+		
 		this.beginTime = ( performance || Date ).now();
-		this. prevTime = this.beginTime;
+		this.prevTime = this.beginTime;
 		this.frames = 0;
 		
 		this.container = document.createElement( 'div' );
@@ -33,14 +35,53 @@ export default class Stats
 		}, false );
 		this.dom = this.domElement = this.container; // Backwards Compatibility
 		
-		this.fpsPanel = this.addPanel( new Stats.Panel( 'FPS', '#0ff', '#002' ) );
-		this. msPanel = this.addPanel( new Stats.Panel( 'MS' , '#0f0', '#020' ) );
+		this.fpsPanel = this.addPanel( new Stats.Panel( 'FPS', '#0ff', '#002', g ) );
+		this. msPanel = this.addPanel( new Stats.Panel( 'MS' , '#0f0', '#020', g ) );
 		if ( self.performance && self.performance.memory )
 		{
-		this.memPanel = this.addPanel( new Stats.Panel( 'MB' , '#f08', '#201' ) );
+		this.memPanel = this.addPanel( new Stats.Panel( 'MB' , '#f08', '#201', g ) );
 		}
 
 		this.showPanel( 0 );
+	}
+	
+	configureGlobals(config)
+	{
+		if (!config)
+		{
+			config =
+			{
+				wCanvas: 80,
+				hCanvas: 48,
+				xText: 3,
+				yText: 2,
+				xGraph: 3,
+				yGraph: 15,
+				wGraph: 74,
+				hGraph: 30,
+				fontSize: 9,
+				
+				//NOT for premul by pixelRatio:
+				alpha: 0.9,
+			}
+		}
+		
+		let pixelRatio = Math.round( window.devicePixelRatio || 1 );
+		
+		//Premultiply: this should happen on devicePixelRatio ratio change, but that is an unlikely event.
+		//...in that case, we could store a copy of original config (passed via ctor) for re-multiply/copy.
+		let configCpy = {}; //change a copy to avoid calling class changing original obj. or mul in getters?
+		for (let prop in config)
+		{
+			configCpy[prop] = config[prop] * pixelRatio;
+			
+		}
+		//amend non-premultiplied props, since all have been overwritten:
+		configCpy.alpha = config.alpha;
+		//add final prop
+		configCpy.pixelRatio = pixelRatio;
+		
+		return configCpy;
 	}
 	
 	begin()
@@ -52,7 +93,7 @@ export default class Stats
 	{
 		this.frames ++;
 
-		var time = ( performance || Date ).now();
+		let time = ( performance || Date ).now();
 
 		this.msPanel.update( time - this.beginTime, 200 );
 
@@ -65,7 +106,7 @@ export default class Stats
 
 			if ( this.memPanel )
 			{
-				var memory = performance.memory;
+				let memory = performance.memory;
 				this.memPanel.update( memory.usedJSHeapSize / 1048576, memory.jsHeapSizeLimit / 1048576 );
 			}
 		}
@@ -101,100 +142,100 @@ export default class Stats
 	//nested class
 	static Panel = class Panel
 	{
-		min = 0
-		max = 0
-		PR = 0
-		WIDTH = 0
-		TEXT_X = 0
-		TEXT_Y = 0
-		GRAPH_X = 0
-		GRAPH_Y = 0
-		GRAPH_WIDTH = 0
-		GRAPH_HEIGHT = 0
-		
 		dom = undefined
 		fg = undefined
 		bg = undefined
+		g = undefined //global config
+		min = Infinity
+		max = 0
 		
-		constructor(name, fg, bg) 
+		constructor(name, fg, bg, g) 
 		{
-			console.log (`Child: ${name}`);
-			
+			//panel-specifics
 			this.name = name;
 			this.fg = fg;
 			this.bg = bg;
-			//numeric config
+			this.g = g;
 			
-			this.min = Infinity;
-			this.max = 0;
-			let PR = this.PR = Math.round( window.devicePixelRatio || 1 );
-
-			let WIDTH = this.WIDTH = 80 * PR;
-			let HEIGHT = this.HEIGHT = 48 * PR;
-			let TEXT_X = this.TEXT_X = 3 * PR;
-			let TEXT_Y = this.TEXT_Y = 2 * PR;
-			let GRAPH_X = this.GRAPH_X = 3 * PR;
-			let GRAPH_Y = this.GRAPH_Y = 15 * PR;
-			let GRAPH_WIDTH = this.GRAPH_WIDTH = 74 * PR;
-			let GRAPH_HEIGHT = this.GRAPH_HEIGHT = 30 * PR;
+			//all-panel sizes
+			let wCanvas = g.wCanvas;
+			let hCanvas = g.hCanvas;
+			let xText = g.xText;
+			let yText = g.yText;
+			let xGraph = g.xGraph;
+			let yGraph = g.yGraph;
+			let wGraph = g.wGraph;
+			let hGraph = g.hGraph;
+			let alpha = g.alpha;
+			let pixelRatio = g.pixelRatio;
 			
 			//canvas and context
 			let canvas = document.createElement( 'canvas' );
 			let context = canvas.getContext( '2d' );
 			
-			canvas.width = WIDTH;
-			canvas.height = HEIGHT;
+			canvas.width = wCanvas;
+			canvas.height = hCanvas;
 			canvas.style.cssText = 'width:80px;height:48px';
 			
-			context.font = 'bold ' + ( 9 * PR ) + 'px Helvetica,Arial,sans-serif';
+			context.font = 'bold ' + ( g.fontSize ) + 'px Helvetica,Arial,sans-serif';
 			context.textBaseline = 'top';
 
 			context.fillStyle = bg;
-			context.fillRect( 0, 0, WIDTH, HEIGHT );
+			context.fillRect( 0, 0, wCanvas, hCanvas );
 
 			context.fillStyle = fg;
-			context.fillText( name, TEXT_X, TEXT_Y );
-			context.fillRect( GRAPH_X, GRAPH_Y, GRAPH_WIDTH, GRAPH_HEIGHT );
+			context.fillText( name, xText, yText );
+			context.fillRect( xGraph, yGraph, wGraph, hGraph );
 
 			context.fillStyle = bg;
-			context.globalAlpha = 0.9;
-			context.fillRect( GRAPH_X, GRAPH_Y, GRAPH_WIDTH, GRAPH_HEIGHT );
+			context.globalAlpha = alpha;
+			context.fillRect( xGraph, yGraph, wGraph, hGraph );
 			
-
 			this.dom = canvas;
 		}
 		
 		update ( value, maxValue )
 		{
 			let round = Math.round;
-			let min = this.min = Math.min( this.min, value );
-			let max = this.max = Math.max( this.max, value );
+			let g = this.g;
+			
+			//panel-specifics
+			let name = this.name;
 			let bg = this.bg;
 			let fg = this.fg;
-			let TEXT_X = this.TEXT_X;
-			let TEXT_Y = this.TEXT_Y;
-			let GRAPH_X = this.GRAPH_X;
-			let GRAPH_Y = this.GRAPH_Y;
-			let GRAPH_WIDTH = this.GRAPH_WIDTH;
-			let GRAPH_HEIGHT = this.GRAPH_HEIGHT;
-			let WIDTH = this.WIDTH;
-			let PR = this.PR;
+			let min = this.min = Math.min( this.min, value );
+			let max = this.max = Math.max( this.max, value );
+			
+			//all-panel sizes
+			let wCanvas = g.wCanvas;
+			let hCanvas = g.hCanvas;
+			let xText = g.xText;
+			let yText = g.yText;
+			let xGraph = g.xGraph;
+			let yGraph = g.yGraph;
+			let wGraph = g.wGraph;
+			let hGraph = g.hGraph;
+			let alpha = g.alpha;
+			const alphaFull = 1.0;
+			let pixelRatio = g.pixelRatio;
+			
+			//canvas and context
 			let canvas = this.dom;
-			var context = canvas.getContext( '2d' );
+			let context = canvas.getContext( '2d' );
 			
 			context.fillStyle = bg;
-			context.globalAlpha = 1;
-			context.fillRect( 0, 0, WIDTH, GRAPH_Y );
+			context.globalAlpha = alphaFull;
+			context.fillRect( 0, 0, wCanvas, yGraph );
 			context.fillStyle = fg;
-			context.fillText( round( value ) + ' ' + this.name + ' (' + round( min ) + '-' + round( max ) + ')', TEXT_X, TEXT_Y );
+			context.fillText( round( value ) + ' ' + name + ' (' + round( min ) + '-' + round( max ) + ')', xText, yText );
 
-			context.drawImage( canvas, GRAPH_X + PR, GRAPH_Y, GRAPH_WIDTH - PR, GRAPH_HEIGHT, GRAPH_X, GRAPH_Y, GRAPH_WIDTH - PR, GRAPH_HEIGHT );
+			context.drawImage( canvas, xGraph + pixelRatio, yGraph, wGraph - pixelRatio, hGraph, xGraph, yGraph, wGraph - pixelRatio, hGraph );
 
-			context.fillRect( GRAPH_X + GRAPH_WIDTH - PR, GRAPH_Y, PR, GRAPH_HEIGHT );
+			context.fillRect( xGraph + wGraph - pixelRatio, yGraph, pixelRatio, hGraph );
 
 			context.fillStyle = bg;
-			context.globalAlpha = 0.9;
-			context.fillRect( GRAPH_X + GRAPH_WIDTH - PR, GRAPH_Y, PR, round( ( 1 - ( value / maxValue ) ) * GRAPH_HEIGHT ) );
+			context.globalAlpha = alpha;
+			context.fillRect( xGraph + wGraph - pixelRatio, yGraph, pixelRatio, round( ( 1 - ( value / maxValue ) ) * hGraph ) );
 		}
 	}
 }
