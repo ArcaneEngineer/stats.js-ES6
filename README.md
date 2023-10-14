@@ -1,7 +1,7 @@
 **What's changed so far:** 
 
 * Converted to ES6 module.
-* Generalised code to allow for custom panels to be added by the user.
+* Generalised code to allow for custom panels to be added by the user, for example, `entities / maxEntities` count in your simulation.
 
 **What's planned:**
 
