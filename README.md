@@ -1,8 +1,8 @@
 **What's changed so far:** 
 
 * Converted to ES6 module.
-* Generalised code for loop based processing of all panels, thereby *sealing off* the majority of code from future changes.
-* Allowed for custom panels to be added by the user via external config *without* changing the Stats.js source code further, an improvement over the original version where source changes were required for init and update of custom panels.
+* Generalised loop-based processing of all panels, thereby *sealing off* the majority of code from future changes.
+* Allowed custom panels to be added by the user via external config *without* changing the Stats.js source code further, an improvement over the original version where source changes were required for init and update of custom panels.
   
 **What's planned:**
 
