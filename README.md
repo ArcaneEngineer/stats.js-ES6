@@ -1,4 +1,11 @@
-**What's changed:** This module has been converted to ES6. I got tired of trying to import into a worker thread that handles my rendering -- [worker threads have strange requirements for imports](https://stackoverflow.com/questions/44901550/whats-the-difference-between-importscripts-and-es6-modules-import) and non-ES6 imports make that even more difficult.
+**What's changed so far:** 
+
+* Converted to ES6 module.
+* Generalised code to allow for custom panels to be added by the user.
+
+**What's planned:**
+
+* Get this module working in a separate rendering thread, since secondary threads connot write canvases without `OffscreenCanvas` / `transferControlToOffscreen`.
 
 stats.js
 ========
@@ -29,7 +36,10 @@ npm install stats.js
 ### Usage ###
 
 ```javascript
-var stats = new Stats();
+//See config formats in the javascript source. These can be copied, modified, and placed here for custom user experience.
+let globalConfig = {...};
+let panelsConfig = {...};
+var stats = new Stats(globalConfig, panelsConfig); //parameters are optional - defaults will otherwise be used
 stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild( stats.dom );
 
