@@ -59,7 +59,7 @@ static panelsConfig =
 		calcValue: function (timing){return Entities.count;}, //numerator
 		calcMaxValue: function (timing){return Entities.MAX;} //denominator
 	},
-}
+];
 var stats = new Stats(globalConfig, panelsConfig); //parameters are optional - defaults will otherwise be used
 stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild( stats.dom );
