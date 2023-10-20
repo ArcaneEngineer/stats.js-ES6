@@ -86,7 +86,6 @@ export default class Stats
 		//createPanels
 		for (let id = 0; id < panelsConfig.length; id++)
 		{
-			console.log("creating", id);
 			let p = panelsConfig[id];
 			let allowCreatePanel = true; //if no explicit "disallower" exists, we can create.
 			if (p.hasOwnProperty('disallowCreate'))
@@ -97,7 +96,6 @@ export default class Stats
 			if (allowCreatePanel)
 				this.addPanel( new Stats.Panel( id, p, g ) );
 		}
-		console.log(this.panels)
 		
 		this.showPanel( 0 );
 	}
