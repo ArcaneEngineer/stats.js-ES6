@@ -43,7 +43,7 @@ export default class Stats
 			updateCondition: function(timing, customObj) {return timing.timeNow >= timing.timePrevFrameEnd + TIME_DIFF;},
 			calcValue: function (timing){return performance.memory.usedJSHeapSize / BYTES_PER_MB;},
 			calcMaxValue: function (timing){return performance.memory.jsHeapSizeLimit / BYTES_PER_MB;}, 
-			disallowCreate: function() {return !(self.performance && self.performance.memory);} //special, for panels that need to check if they can be created.
+			disallowCreate: function() {if (self.performance) return !self.performance.memory; else return true;} //special, for panels that need to check if they can be created. Firefox does not have this property.
 		},
 	]
 	
@@ -86,6 +86,7 @@ export default class Stats
 		//createPanels
 		for (let id = 0; id < panelsConfig.length; id++)
 		{
+			console.log("creating", id);
 			let p = panelsConfig[id];
 			let allowCreatePanel = true; //if no explicit "disallower" exists, we can create.
 			if (p.hasOwnProperty('disallowCreate'))
@@ -96,6 +97,7 @@ export default class Stats
 			if (allowCreatePanel)
 				this.addPanel( new Stats.Panel( id, p, g ) );
 		}
+		console.log(this.panels)
 		
 		this.showPanel( 0 );
 	}
@@ -136,8 +138,10 @@ export default class Stats
 		timing.timeSinceThisFrameStarted = timing.timeNow - timing.timeThisFrameStart;
 		timing.timeSincePrevFrameEnded = timing.timeNow - timing.timePrevFrameEnd;
 		
-		for (let id = 0; id < 3; id++)
+		for (let id = 0; id < this.panels.length; id++)
 		{
+			// console.log(id);
+			// console.log(this.panels);
 			let panel = this.panels[id];
 			let config = panel.p;
 			if (config.updateCondition(timing) == true)
